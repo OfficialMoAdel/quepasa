@@ -12,7 +12,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: officialmoadel/quepasa # Updated to your Docker Hub repo
+  IMAGE_NAME: officialmoadel/quepasa
   GIT_REF: ${{ github.head_ref || github.ref_name }}
   NODE_ENV: production
   APP_ENV: production
@@ -34,6 +34,9 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx # ✅ Fix: Enable multi-platform support
+        uses: docker/setup-buildx-action@v3
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -63,7 +66,7 @@ jobs:
         with:
           context: .
           file: docker/Dockerfile
-          platforms: linux/amd64,linux/arm64 # Added support for ARM64
+          platforms: linux/amd64,linux/arm64 # ✅ Multi-arch build enabled
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
